@@ -53,6 +53,11 @@ function HomePage() {
 
       let json;
 
+      console.log({
+        environment: process.env.NODE_ENV,
+        isProduction: process.env.NODE_ENV === "production",
+      });
+
       if (process.env.NODE_ENV === 'production') {
         console.log("production");
         json = bookData.books;
