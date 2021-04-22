@@ -53,11 +53,10 @@ function HomePage() {
 
       let json;
 
-
       if (process.env.NODE_ENV === 'production') {
         console.log("production");
         json = bookData.books;
-        if (query !== "") {
+        if (newQuery) {
           json = json.filter((b) => {
             return !b.title.toLowerCase().search(newQuery);
           });
