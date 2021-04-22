@@ -53,20 +53,18 @@ function HomePage() {
 
       let json;
 
-      if (process.env.NODE_ENV === "Production") {
-        console.log("Production");
+      console.log({ treoDemoLoiProENV: process.env.NODE_ENV });
+
+      if (true) {
+        // console.log("Production");
         json = bookData.books;
+        console.log({ json });
         if (query !== "") {
           json = json.filter((b) => {
-            console.log({
-              newQuery,
-              bookTitle: b.title,
-              formattedTitle: b.title.toLowerCase(),
-              matchesQuery: !b.title.toLowerCase().search(newQuery),
-            });
             return !b.title.toLowerCase().search(newQuery);
           });
         }
+        console.log({ json });
       } else {
         console.log("Development");
         const resp = await fetch("http://localhost:5000/books" + urlParams);
