@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Nav, Card, Container, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 
@@ -29,55 +29,58 @@ function BookDetailPage() {
         setBook(json);
       }
       fetchBook();
-    }, []);
+    }, [id]);
   return (
     <div>
       <h1>Book details!</h1>
+      <h3>{book.title}</h3>
     </div>
-  )
+  );
 }
 
 function HomePage() {
-  const [pageNum, setPageNum] = useState(1)
+  const [pageNum] = useState(1)
   const [query, setQuery] = useState('')
-  const [limit, setLimit] = useState(3)
+  const [limit] = useState(3)
   const [books, setBooks] = useState([]);
 
-  async function fetchBooks(newQuery) {
-    let urlParams = `?_page=${pageNum}&_limit=${limit}`;
-    if (query !== '') {
-      urlParams = urlParams + `&q=${query}`
-    }
-
-    let json
-    
-    if (process.env.NODE_ENV === "Production") {
-    // if (true) {
-      console.log('Production')
-      json = bookData.books;
-      if (query !== '') {
-        json = json.filter((b) => {
-          console.log({
-            newQuery,
-            bookTitle: b.title,
-            formattedTitle: b.title.toLowerCase(), 
-            matchesQuery: !b.title.toLowerCase().search(newQuery),
-          });
-          return !b.title.toLowerCase().search(newQuery)
-        })
+  const fetchBooks = useCallback(
+    async (newQuery) => {
+      let urlParams = `?_page=${pageNum}&_limit=${limit}`;
+      if (query !== "") {
+        urlParams = urlParams + `&q=${query}`;
       }
-    } else {
-      console.log('Development')
-      const resp = await fetch("http://localhost:5000/books" + urlParams);
-      json = await resp.json();
-    }
-    
-    setBooks(json);
-  }
+
+      let json;
+
+      if (process.env.NODE_ENV === "Production") {
+        console.log("Production");
+        json = bookData.books;
+        if (query !== "") {
+          json = json.filter((b) => {
+            console.log({
+              newQuery,
+              bookTitle: b.title,
+              formattedTitle: b.title.toLowerCase(),
+              matchesQuery: !b.title.toLowerCase().search(newQuery),
+            });
+            return !b.title.toLowerCase().search(newQuery);
+          });
+        }
+      } else {
+        console.log("Development");
+        const resp = await fetch("http://localhost:5000/books" + urlParams);
+        json = await resp.json();
+      }
+
+      setBooks(json);
+    },
+    [limit, pageNum, query],
+  );
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [fetchBooks]);
 
   const onSearch = (e) => {
     setQuery(e.target.value)
